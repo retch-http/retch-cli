@@ -1,4 +1,4 @@
-use std::{ffi::OsString, os::unix::ffi::OsStringExt};
+use std::ffi::OsString;
 
 use clap::{Parser, ValueEnum};
 use retch::{retcher::{self, RequestOptions}, Browser as RetchBrowser};
@@ -83,7 +83,7 @@ async fn main() {
 
 
     let body: Option<Vec<u8>> = match args.data {
-        Some(data) => Some(data.into_vec()),
+        Some(data) => Some(data.into_string().unwrap().into_bytes()),
         None => None
     };
 
