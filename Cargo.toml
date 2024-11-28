@@ -11,6 +11,7 @@ h2 = "0.4.7"
 retch = { git="https://github.com/retch-http/retch.git", branch="master" }
 rustls = { version="0.23.16" }
 tokio = { version="1.41.1", features = ["full"] }
+aws-lc-rs = { version = "1.11.1", features = ["bindgen"] }
 
 [patch.crates-io]
 rustls = { git="https://github.com/retch-http/rustls.git", branch="retch-patch" }
