@@ -8,13 +8,12 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.5.21", features = ["derive"] }
 h2 = "0.4.7"
-retch = { path = "../retch" }
+retch = { git="https://github.com/retch-http/retch.git", branch="master" }
 rustls = { version="0.23.16" }
 tokio = { version="1.41.1", features = ["full"] }
 
 [patch.crates-io]
-rustls = { path = "../rustls/rustls" }
-h2 = { path = "../h2" }
+rustls = { git="https://github.com/retch-http/rustls.git", branch="retch-patch" }
 
 [profile.release]
 strip = true  # Automatically strip symbols from the binary.
