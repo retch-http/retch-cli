@@ -1,3 +1,5 @@
+use std::{ffi::OsString, os::unix::ffi::OsStringExt};
+
 use clap::{Parser, ValueEnum};
 use retch::{retcher::{self, RequestOptions}, Browser as RetchBrowser};
 
@@ -51,6 +53,10 @@ struct CliArgs {
     #[arg(short='x', long="proxy")]
     proxy: Option<String>,
 
+    /// Data to send with the request.
+    #[arg(short, long)]
+    data: Option<OsString>,
+
     /// URL of the request to make
     url: String,
 }
@@ -75,15 +81,21 @@ async fn main() {
         client
     };
 
+
+    let body: Option<Vec<u8>> = match args.data {
+        Some(data) => Some(data.into_vec()),
+        None => None
+    };
+
     let client = client.build();
     
     let custom_headers = headers::process_headers(args.headers);
     let response = match args.method {
         Method::GET => client.get(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::POST => client.post(args.url, None, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::PUT => client.put(args.url, None, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::POST => client.post(args.url, body, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::PUT => client.put(args.url, body, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
         Method::DELETE => client.delete(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::PATCH => client.patch(args.url, None, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::PATCH => client.patch(args.url, body, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
         Method::HEAD => client.head(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
         Method::OPTIONS => client.options(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
         Method::TRACE => client.trace(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
