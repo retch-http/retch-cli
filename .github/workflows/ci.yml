@@ -118,19 +118,19 @@ jobs:
         #     name: retch-cli-Darwin-aarch64.tar.gz
         toolchain:
           - stable
-        include:
-          - platform:
-              os-name: Linux-x86_64
-              runs-on: ubuntu-20.04
-              target: x86_64-unknown-linux-musl
-              bin: retch-cli
-            toolchain: beta
-          - platform:
-              os-name: Linux-x86_64
-              runs-on: ubuntu-20.04
-              target: x86_64-unknown-linux-musl
-              bin: retch-cli
-            toolchain: nightly
+        # include:
+        #   - platform:
+        #       os-name: Linux-x86_64
+        #       runs-on: ubuntu-20.04
+        #       target: x86_64-unknown-linux-musl
+        #       bin: retch-cli
+        #     toolchain: beta
+        #   - platform:
+        #       os-name: Linux-x86_64
+        #       runs-on: ubuntu-20.04
+        #       target: x86_64-unknown-linux-musl
+        #       bin: retch-cli
+        #     toolchain: nightly
     steps:
       - uses: actions/checkout@v4
       - name: Cache cargo & target directories
@@ -139,9 +139,6 @@ jobs:
         run: |
           git config --global user.email "jdoe@example.com"
           git config --global user.name "J. Doe"
-      - name: Install libssl-dev
-        if: matrix.platform.os-name == 'Linux-x86_64'
-        run: sudo apt-get install -y libssl-dev
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v0
         with:
