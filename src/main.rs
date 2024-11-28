@@ -47,6 +47,10 @@ struct CliArgs {
     #[arg(short='f', long, action)]
     fallback: bool,
 
+    /// Proxy to use for the request.
+    #[arg(short='x', long="proxy")]
+    proxy: Option<String>,
+
     /// URL of the request to make
     url: String,
 }
@@ -65,18 +69,24 @@ async fn main() {
         Browser::Retch => client
     };
 
-    let headers = headers::process_headers(args.headers);
-    let client = client.build();
+    client = if args.proxy.is_some() {
+        client.with_proxy(args.proxy.unwrap())
+    } else {
+        client
+    };
 
+    let client = client.build();
+    
+    let custom_headers = headers::process_headers(args.headers);
     let response = match args.method {
-        Method::GET => client.get(args.url, Some(RequestOptions { headers })).await.unwrap(),
-        Method::POST => client.post(args.url, None, Some(RequestOptions { headers })).await.unwrap(),
-        Method::PUT => client.put(args.url, None, Some(RequestOptions { headers })).await.unwrap(),
-        Method::DELETE => client.delete(args.url, Some(RequestOptions { headers })).await.unwrap(),
-        Method::PATCH => client.patch(args.url, None, Some(RequestOptions { headers })).await.unwrap(),
-        Method::HEAD => client.head(args.url, Some(RequestOptions { headers })).await.unwrap(),
-        Method::OPTIONS => client.options(args.url, Some(RequestOptions { headers })).await.unwrap(),
-        Method::TRACE => client.trace(args.url, Some(RequestOptions { headers })).await.unwrap(),
+        Method::GET => client.get(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::POST => client.post(args.url, None, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::PUT => client.put(args.url, None, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::DELETE => client.delete(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::PATCH => client.patch(args.url, None, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::HEAD => client.head(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::OPTIONS => client.options(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::TRACE => client.trace(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
     };
 
     print!("{}", response.text().await.unwrap());
