@@ -16,6 +16,9 @@ aws-lc-rs = { version = "1.11.1", features = ["bindgen"] }
 [target.x86_64-unknown-linux-musl.dependencies]
 openssl = { version = "*", features = ["vendored"] }
 
+[target.arm-unknown-linux-musleabi.dependencies]
+openssl = { version = "*", features = ["vendored"] }
+
 [patch.crates-io]
 rustls = { git="https://github.com/retch-http/rustls.git", branch="retch-patch" }
 

@@ -38,16 +38,16 @@ jobs:
             target: x86_64-unknown-linux-musl
             bin: retch-cli
             name: retch-cli-Linux-x86_64-musl.tar.gz
-        #   - os-name: Linux-aarch64
-        #     runs-on: ubuntu-20.04
-        #     target: aarch64-unknown-linux-musl
-        #     bin: retch-cli
-        #     name: retch-cli-Linux-aarch64-musl.tar.gz
-        #   - os-name: Linux-arm
-        #     runs-on: ubuntu-20.04
-        #     target: arm-unknown-linux-musleabi
-        #     bin: retch-cli
-        #     name: retch-cli-Linux-arm-musl.tar.gz
+          - os-name: Linux-aarch64
+            runs-on: ubuntu-20.04
+            target: aarch64-unknown-linux-musl
+            bin: retch-cli
+            name: retch-cli-Linux-aarch64-musl.tar.gz
+          - os-name: Linux-arm
+            runs-on: ubuntu-20.04
+            target: arm-unknown-linux-musleabi
+            bin: retch-cli
+            name: retch-cli-Linux-arm-musl.tar.gz
         #   - os-name: Linux-i686
         #     runs-on: ubuntu-20.04
         #     target: i686-unknown-linux-musl
@@ -89,48 +89,35 @@ jobs:
         #     bin: retch-cli
         #     name: retch-cli-NetBSD-x86_64.tar.gz
         #     skip_tests: true
-        #   - os-name: Windows-aarch64
-        #     runs-on: windows-latest
-        #     target: aarch64-pc-windows-msvc
-        #     bin: retch-cli.exe
-        #     name: retch-cli-Windows-aarch64.zip
-        #     skip_tests: true
+          - os-name: Windows-aarch64
+            runs-on: windows-latest
+            target: aarch64-pc-windows-msvc
+            bin: retch-cli.exe
+            name: retch-cli-Windows-aarch64.zip
+            skip_tests: true
         #   - os-name: Windows-i686
         #     runs-on: windows-latest
         #     target: i686-pc-windows-msvc
         #     bin: retch-cli.exe
         #     name: retch-cli-Windows-i686.zip
         #     skip_tests: true
-        #   - os-name: Windows-x86_64
-        #     runs-on: windows-latest
-        #     target: x86_64-pc-windows-msvc
-        #     bin: retch-cli.exe
-        #     name: retch-cli-Windows-x86_64.zip
-        #   - os-name: macOS-x86_64
-        #     runs-on: macOS-latest
-        #     target: x86_64-apple-darwin
-        #     bin: retch-cli
-        #     name: retch-cli-Darwin-x86_64.tar.gz
-        #   - os-name: macOS-aarch64
-        #     runs-on: macOS-latest
-        #     target: aarch64-apple-darwin
-        #     bin: retch-cli
-        #     name: retch-cli-Darwin-aarch64.tar.gz
+          - os-name: Windows-x86_64
+            runs-on: windows-latest
+            target: x86_64-pc-windows-msvc
+            bin: retch-cli.exe
+            name: retch-cli-Windows-x86_64.zip
+          - os-name: macOS-x86_64
+            runs-on: macOS-latest
+            target: x86_64-apple-darwin
+            bin: retch-cli
+            name: retch-cli-Darwin-x86_64.tar.gz
+          - os-name: macOS-aarch64
+            runs-on: macOS-latest
+            target: aarch64-apple-darwin
+            bin: retch-cli
+            name: retch-cli-Darwin-aarch64.tar.gz
         toolchain:
           - stable
-        # include:
-        #   - platform:
-        #       os-name: Linux-x86_64
-        #       runs-on: ubuntu-20.04
-        #       target: x86_64-unknown-linux-musl
-        #       bin: retch-cli
-        #     toolchain: beta
-        #   - platform:
-        #       os-name: Linux-x86_64
-        #       runs-on: ubuntu-20.04
-        #       target: x86_64-unknown-linux-musl
-        #       bin: retch-cli
-        #     toolchain: nightly
     steps:
       - uses: actions/checkout@v4
       - name: Cache cargo & target directories
