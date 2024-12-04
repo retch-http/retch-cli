@@ -24,6 +24,7 @@ openssl = { version = "*", features = ["vendored"] }
 
 [patch.crates-io]
 rustls = { git="https://github.com/retch-http/rustls.git", branch="retch-patch" }
+h2 = { git="https://github.com/retch-http/h2.git", branch="retch-patch" }
 
 [profile.release]
 strip = true  # Automatically strip symbols from the binary.
