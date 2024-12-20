@@ -52,6 +52,10 @@ struct CliArgs {
     /// Proxy to use for the request.
     #[arg(short='x', long="proxy")]
     proxy: Option<String>,
+    
+    /// Maximum time in seconds to wait for the request to complete.
+    #[arg(short='m', long="max-time")]
+    max_time: Option<u64>,
 
     /// Data to send with the request.
     #[arg(short, long)]
@@ -98,10 +102,15 @@ async fn main() {
 
     let mut client = client.build();
 
+    let timeout = match args.max_time {
+        Some(time) => Some(std::time::Duration::from_secs(time)),
+        None => None
+    };
+
     let options = RequestOptions {
         headers: headers::process_headers(args.headers),
         http3_prior_knowledge: args.http3_prior_knowledge,
-        ..Default::default()
+        timeout,
     };
 
     let response = match args.method {
