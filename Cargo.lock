@@ -1546,7 +1546,7 @@ dependencies = [
 [[package]]
 name = "retch"
 version = "0.1.0"
-source = "git+https://github.com/retch-http/retch.git?branch=master#d21a7a2abe8c725436532f304e94dda904ccf768"
+source = "git+https://github.com/retch-http/retch.git?branch=master#877eb3ba4779fd37448369e4c65dc972217039da"
 dependencies = [
  "hickory-client",
  "hickory-proto",
