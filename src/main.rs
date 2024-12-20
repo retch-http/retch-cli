@@ -52,6 +52,10 @@ struct CliArgs {
     /// Proxy to use for the request.
     #[arg(short='x', long="proxy")]
     proxy: Option<String>,
+    
+    /// Maximum time in seconds to wait for the request to complete.
+    #[arg(short='m', long="max-time")]
+    max_time: Option<u64>,
 
     /// Data to send with the request.
     #[arg(short, long)]
@@ -81,24 +85,33 @@ async fn main() {
         client
     };
 
-
     let body: Option<Vec<u8>> = match args.data {
         Some(data) => Some(data.into_string().unwrap().into_bytes()),
         None => None
     };
 
-    let client = client.build();
-    
     let custom_headers = headers::process_headers(args.headers);
+    let timeout = match args.max_time {
+        Some(time) => Some(std::time::Duration::from_secs(time)),
+        None => None
+    };
+    
+    let request_options = RequestOptions {
+        headers: custom_headers,
+        timeout,
+        ..Default::default()
+    };
+
+    let mut client = client.build();
     let response = match args.method {
-        Method::GET => client.get(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::POST => client.post(args.url, body, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::PUT => client.put(args.url, body, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::DELETE => client.delete(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::PATCH => client.patch(args.url, body, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::HEAD => client.head(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::OPTIONS => client.options(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::TRACE => client.trace(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::GET => client.get(args.url, Some(request_options)).await.unwrap(),
+        Method::POST => client.post(args.url, body, Some(request_options)).await.unwrap(),
+        Method::PUT => client.put(args.url, body, Some(request_options)).await.unwrap(),
+        Method::DELETE => client.delete(args.url, Some(request_options)).await.unwrap(),
+        Method::PATCH => client.patch(args.url, body, Some(request_options)).await.unwrap(),
+        Method::HEAD => client.head(args.url, Some(request_options)).await.unwrap(),
+        Method::OPTIONS => client.options(args.url, Some(request_options)).await.unwrap(),
+        Method::TRACE => client.trace(args.url, Some(request_options)).await.unwrap(),
     };
 
     print!("{}", response.text().await.unwrap());
