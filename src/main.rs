@@ -1,7 +1,7 @@
 use std::ffi::OsString;
 
 use clap::{Parser, ValueEnum};
-use retch::{retcher::{self, RequestOptions}, Browser as RetchBrowser};
+use retch::{retcher::{self}, RequestOptions, Browser as RetchBrowser};
 
 mod headers;
 
@@ -57,6 +57,14 @@ struct CliArgs {
     #[arg(short, long)]
     data: Option<OsString>,
 
+    /// Enforce the use of HTTP/3 for the request. Note that if the server does not support HTTP/3, the request will fail.
+    #[arg(long="http3-only", action)]
+    http3_prior_knowledge: bool,
+    
+    /// Enable the use of HTTP/3. This will attempt to use HTTP/3, but fall back to earlier versions of HTTP if the server does not support it.
+    #[arg(long="http3", action)]
+    enable_http3: bool,
+
     /// URL of the request to make
     url: String,
 }
@@ -75,30 +83,36 @@ async fn main() {
         Browser::Retch => client
     };
 
-    client = if args.proxy.is_some() {
-        client.with_proxy(args.proxy.unwrap())
-    } else {
-        client
-    };
+    if args.proxy.is_some() {
+        client = client.with_proxy(args.proxy.unwrap())
+    }
 
+    if args.enable_http3 || args.http3_prior_knowledge {
+        client = client.with_http3()
+    }
 
     let body: Option<Vec<u8>> = match args.data {
         Some(data) => Some(data.into_string().unwrap().into_bytes()),
         None => None
     };
 
-    let client = client.build();
-    
-    let custom_headers = headers::process_headers(args.headers);
+    let mut client = client.build();
+
+    let options = RequestOptions {
+        headers: headers::process_headers(args.headers),
+        http3_prior_knowledge: args.http3_prior_knowledge,
+        ..Default::default()
+    };
+
     let response = match args.method {
-        Method::GET => client.get(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::POST => client.post(args.url, body, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::PUT => client.put(args.url, body, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::DELETE => client.delete(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::PATCH => client.patch(args.url, body, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::HEAD => client.head(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::OPTIONS => client.options(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
-        Method::TRACE => client.trace(args.url, Some(RequestOptions { headers: custom_headers })).await.unwrap(),
+        Method::GET => client.get(args.url, Some(options)).await.unwrap(),
+        Method::POST => client.post(args.url, body, Some(options)).await.unwrap(),
+        Method::PUT => client.put(args.url, body, Some(options)).await.unwrap(),
+        Method::DELETE => client.delete(args.url, Some(options)).await.unwrap(),
+        Method::PATCH => client.patch(args.url, body, Some(options)).await.unwrap(),
+        Method::HEAD => client.head(args.url, Some(options)).await.unwrap(),
+        Method::OPTIONS => client.options(args.url, Some(options)).await.unwrap(),
+        Method::TRACE => client.trace(args.url, Some(options)).await.unwrap(),
     };
 
     print!("{}", response.text().await.unwrap());
