@@ -69,6 +69,14 @@ struct CliArgs {
     #[arg(long="http3", action)]
     enable_http3: bool,
 
+    /// Follow redirects
+    #[arg(short="L", long="location", action)]
+    follow_redirects: bool,
+    
+    /// Follow redirects
+    #[arg(long="max-redirs", default_value = "50")]
+    maximum_redirects: usize,
+
     /// URL of the request to make
     url: String,
 }
@@ -93,6 +101,12 @@ async fn main() {
 
     if args.enable_http3 || args.http3_prior_knowledge {
         client = client.with_http3()
+    }
+
+    if args.follow_redirects {
+        client = client.with_redirect(retch::retcher::RedirectBehavior::FollowRedirect(args.maximum_redirects));
+    } else {
+        client = client.with_redirect(retch::retcher::RedirectBehavior::ManualRedirect);
     }
 
     let body: Option<Vec<u8>> = match args.data {
