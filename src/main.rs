@@ -70,7 +70,7 @@ struct CliArgs {
     enable_http3: bool,
 
     /// Follow redirects
-    #[arg(short="L", long="location", action)]
+    #[arg(short='L', long="location", action)]
     follow_redirects: bool,
     
     /// Follow redirects
